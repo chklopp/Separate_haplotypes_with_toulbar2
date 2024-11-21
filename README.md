@@ -5,5 +5,28 @@ Given a genome assembly in fasta format and a set of proteins from the same or a
 Dependencies 
 - miniprot (https://github.com/lh3/miniprot)
 - toulbar2 (https://github.com/toulbar2/toulbar2)
+- xz
 
+Running the script 
 
+<pre>
+python shtb2.py --proteins proteins.fasta --assembly assembly.fasta --ploidy 4
+    
+</pre>
+
+Script help 
+
+<pre>
+python shtb2.py --help
+usage: shtb2.py [-h] --assembly ASSEMBLY --proteins PROTEINS --ploidy PLOIDY [--output OUTPUT] [--mpthreads MPTHREADS]
+
+split haplotypes wiht toulbar2.
+
+options:
+  -h, --help            show this help message and exit
+  --assembly ASSEMBLY   input assembly fasta file
+  --proteins PROTEINS   input proteins fasta file
+  --ploidy PLOIDY       input genome ploïdy
+  --output OUTPUT       haplotype prefix
+  --mpthreads MPTHREADS threads to run miniprot
+</pre>
