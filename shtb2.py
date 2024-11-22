@@ -102,12 +102,12 @@ def align_proteins(proteins, genome, ploidy, threads):
 
 
     
-def run_contraints():
-    print("Solving constraints")
+def run_contraints(time):
+    print("Solving constraints, this will run "+str(time)+" seconds")
     try:
         command = "xz -fz constraints.cfn"
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        command = "toulbar2 -vns constraints.cfn.xz -s=3 -w=solution -timer=60"
+        command = "toulbar2 -vns constraints.cfn.xz -s=3 -w=solution -timer="+str(time)
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if result.returncode == 0 :
             print("constraint solved")
@@ -216,6 +216,7 @@ def main():
     parser.add_argument("--ploidy", type=int, required=True, help="input genome ploïdy")
     parser.add_argument("--output", type=str, default="hap_", required=False, help="haplotype prefix")
     parser.add_argument("--mpthreads", type=int, default=4, required=False, help="threads to run miniprot")
+    parser.add_argument("--optime", type=int, default=900, required=False, help="optimisation time in seconds")
 
     args = parser.parse_args()
 
@@ -240,7 +241,7 @@ def main():
     write_containts(args.ploidy)
     
     # run constraint file with toulbar2
-    run_contraints()
+    run_contraints(args.optime)
 
     # run constraint file with toulbar2
     haplo_dict = get_haplotypes(linked_contig_names)
@@ -250,4 +251,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
