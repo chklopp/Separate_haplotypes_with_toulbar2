@@ -18,7 +18,7 @@ Script help
 
 <pre>
 python shtb2.py --help
-usage: shtb2.py [-h] --assembly ASSEMBLY --proteins PROTEINS --ploidy PLOIDY [--output OUTPUT] [--mpthreads MPTHREADS]
+usage: shtb2.py [-h] --assembly ASSEMBLY --proteins PROTEINS --ploidy PLOIDY [--output OUTPUT] [--mpthreads MPTHREADS] [--optime OPTIME]
 
 split haplotypes wiht toulbar2.
 
@@ -29,4 +29,5 @@ options:
   --ploidy PLOIDY       input genome ploïdy
   --output OUTPUT       haplotype prefix
   --mpthreads MPTHREADS threads to run miniprot
+  --optime OPTIME       optimisation time in seconds
 </pre>
