@@ -40,9 +40,10 @@ def write_containts(ploidy, groups, weight) :
     ctm = {} # dict mapping contigs to sets of transcripts
     cnm = {} # dict mapping contig names to indices
     ind = 0
-    top = 100000000
-    mycfn = pytoulbar2.CFN(top)
-    
+    #top = 100000000000
+    mycfn = pytoulbar2.CFN()
+    top = mycfn.Top
+
     with open("prot.links") as f:
         for l in f:
             l = l[:-1].split()
@@ -76,7 +77,7 @@ def write_containts(ploidy, groups, weight) :
         if (inter > 0):
             #print(cnm[c1],cnm[c2],inter)
             shift += inter
-            table = np.identity(ploidy)*inter*factor # maxcut: pay inter if different. Minimization, pay -inter if different or inter if equal  
+            table = np.identity(ploidy)*inter*inter # maxcut: pay inter if different. Minimization, pay -inter if different or inter if equal  
             mycfn.AddFunction([c1,c2],list(table.flatten()))
 
     # this block has been transformed in double loop 
@@ -123,7 +124,7 @@ def run_contraints(time):
     try:
         command = "xz -fz constraints.cfn"
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        command = "toulbar2 -vns constraints.cfn.xz -s=3 -w=solution -timer="+str(time)
+        command = "toulbar2 -vns constraints.cfn.xz -s=3 -w=solution -timer="+str(time)+ " > toulbar2.log"
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         if result.returncode == 0 :
             print("constraint solved")
