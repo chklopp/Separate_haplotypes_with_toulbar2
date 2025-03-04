@@ -22,7 +22,6 @@
 #https://github.com/toulbar2/toulbar2
 #
 
-
 import argparse
 import itertools as it
 import pytoulbar2
@@ -34,11 +33,9 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import copy
 
-
-
 pytoulbar2.tb2.option.verbose = 0
 
-def write_containts(ploidy) :
+def write_containts(ploidy, groups, weight) :
     print("Writing contraint file")
     ctm = {} # dict mapping contigs to sets of transcripts
     cnm = {} # dict mapping contig names to indices
@@ -48,7 +45,7 @@ def write_containts(ploidy) :
     
     with open("prot.links") as f:
         for l in f:
-            l = l.split()
+            l = l[:-1].split()
             #print(l)
             if (len(l) != 2):
                 print("Malformed line")
@@ -61,29 +58,48 @@ def write_containts(ploidy) :
             ind += 1
             mycfn.AddVariable(l[0],[i for i in range(ploidy)])
 
+    preferences = {}  # preferences dict
+    if groups != "" :
+        with open(groups) as f:   
+           for l in f:
+               l = l[:-1].split()
+               preferences[l[0]] = int(l[1])
+
+    if groups != "" :
+        factor = ind + 1  # TODO: uniquement si fichier des preferences et sinon factor = 1=
+    else :
+        factor = 1
+
     shift = 0
     for c1,c2 in it.combinations(ctm.keys(),2):
         inter = len(ctm[c1].intersection(ctm[c2]))
         if (inter > 0):
             #print(cnm[c1],cnm[c2],inter)
             shift += inter
-            table = np.identity(ploidy)*inter # maxcut: pay inter if different. Minimization, pay -inter if different or inter if equal  
+            table = np.identity(ploidy)*inter*factor # maxcut: pay inter if different. Minimization, pay -inter if different or inter if equal  
             mycfn.AddFunction([c1,c2],list(table.flatten()))
 
     # this block has been transformed in double loop 
     #mycfn.AddFunction([0],[0,top,top,top])
     #mycfn.AddFunction([1],[0,0,top,top])
     #mycfn.AddFunction([2],[0,0,0,top])
-
-    l1 = [0 for i in range(ploidy)]
-    for i in range(ploidy - 1) :
-        l2 = copy.deepcopy(l1)
-        #print("l2=",l2)
-        for j in range(i+1,ploidy) :
-            l2[j]=top
-        mycfn.AddFunction([i],l2)
-    #print([i],l2)
-    
+  
+    if groups == "":
+        # symmetry breaking
+        l1 = [0 for i in range(ploidy)]
+        for i in range(ploidy - 1) :
+            l2 = copy.deepcopy(l1)
+            #print("l2=",l2)
+            for j in range(i+1,ploidy) :
+                l2[j]=top
+            mycfn.AddFunction([i],l2)
+            #print([i],l2)
+    else :
+      for c1 in ctm.keys():
+         l1 = [weight for i in range(ploidy)]
+         l1[preferences[c1]] = 0
+         mycfn.AddFunction([c1],l1)
+      
     #print("Cost shift =",shift)
     mycfn.Dump("constraints.cfn")
 
@@ -151,7 +167,7 @@ def get_haplotypes(names) :
                     print("number of contigs to class = "+str(len(names)))
                     print("solution size = "+str(len(ll)))
                     for j,lll in enumerate(ll) :
-            	        hap[names[j]] = int(lll)+1 
+                        hap[names[j]] = int(lll)+1 
     except FileNotFoundError:
         print("contraint solution file not found")
         return False
@@ -216,13 +232,20 @@ def main():
     parser.add_argument("--ploidy", type=int, required=True, help="input genome ploïdy")
     parser.add_argument("--output", type=str, default="hap_", required=False, help="haplotype prefix")
     parser.add_argument("--mpthreads", type=int, default=4, required=False, help="threads to run miniprot")
+    parser.add_argument("--skip_align", type=bool, default=False, required=False, help="if the alignment is already performed")
     parser.add_argument("--optime", type=int, default=900, required=False, help="optimisation time in seconds")
+    parser.add_argument("--groups", type=str, required=False, default = "", help="groups produced in a previous step (two columns, one for contigs and one for group, start at 0")
+    parser.add_argument("--groups_weight", type=int, required=False, default = 1, help="weight of the group constraint in the model")
 
     args = parser.parse_args()
 
     # check software 
-    softwares = ("xz -h","miniprot -h","toulbar2 -h")
+    softwares = ("xz -h","toulbar2 -h")
     check_softwares(softwares)
+    
+    if args.skip_align == False :
+        softwares = ("miniprot -h")
+        check_softwares(softwares)
 
     # create sequence manipulator
     manipulator = SequenceManipulator()
@@ -231,14 +254,15 @@ def main():
     manipulator.load(args.assembly)
 
     # compare protein file to genome file 
-    align_proteins(args.proteins, args.assembly, args.ploidy, args.mpthreads)
+    if args.skip_align == False :
+        align_proteins(args.proteins, args.assembly, args.ploidy, args.mpthreads)
     
     # generate link file 
     linked_contig_names = generate_link_file()
     print("Number of contigs having protein links :"+str(len(linked_contig_names)))
     
     # generate constraint file 
-    write_containts(args.ploidy)
+    write_containts(args.ploidy, args.groups, args.groups_weight)
     
     # run constraint file with toulbar2
     run_contraints(args.optime)
