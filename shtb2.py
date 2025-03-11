@@ -97,7 +97,8 @@ def write_containts(ploidy, groups, weight) :
             #print([i],l2)
     else :
       for c1 in ctm.keys():
-         l1 = [weight for i in range(ploidy)]
+         #l1 = [weight for i in range(ploidy)]
+         l1 = [len(ctm[c1]) for i in range(ploidy)]
          l1[preferences[c1]] = 0
          mycfn.AddFunction([c1],l1)
       
