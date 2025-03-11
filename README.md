@@ -17,8 +17,8 @@ python shtb2.py --proteins proteins.fasta --assembly assembly.fasta --ploidy 4
 Script help 
 
 <pre>
-python shtb2.py --help
-usage: shtb2.py [-h] --assembly ASSEMBLY --proteins PROTEINS --ploidy PLOIDY [--output OUTPUT] [--mpthreads MPTHREADS] [--optime OPTIME]
+usage: shtb2.py [-h] --assembly ASSEMBLY --proteins PROTEINS --ploidy PLOIDY [--output OUTPUT] [--mpthreads MPTHREADS] [--skip_align SKIP_ALIGN] [--optime OPTIME] [--groups GROUPS]
+                    [--groups_weight GROUPS_WEIGHT]
 
 split haplotypes wiht toulbar2.
 
@@ -28,6 +28,13 @@ options:
   --proteins PROTEINS   input proteins fasta file
   --ploidy PLOIDY       input genome ploïdy
   --output OUTPUT       haplotype prefix
-  --mpthreads MPTHREADS threads to run miniprot
+  --mpthreads MPTHREADS
+                        threads to run miniprot
+  --skip_align SKIP_ALIGN
+                        if the alignment is already performed
   --optime OPTIME       optimisation time in seconds
+  --groups GROUPS       groups produced in a previous step (two columns, one for contigs and one for group, start at 0
+  --groups_weight GROUPS_WEIGHT
+                        weight of the group constraint in the model
+
 </pre>
