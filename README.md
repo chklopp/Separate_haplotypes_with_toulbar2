@@ -34,7 +34,5 @@ options:
                         if the alignment is already performed
   --optime OPTIME       optimisation time in seconds
   --groups GROUPS       groups produced in a previous step (two columns, one for contigs and one for group, start at 0
-  --groups_weight GROUPS_WEIGHT
-                        weight of the group constraint in the model
 
 </pre>
