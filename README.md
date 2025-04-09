@@ -1,6 +1,9 @@
 # Separate haplotypes with toulbar2
 
-Given a genome assembly in fasta format and a set of proteins from the same or a closely related species also in fasta format and the awaited ploitdy, our python script will align the proteins onto the genome, produce a protein to contig link file, transform the link file in a contraint file, resolve the contraints with toolbar2 and extract the haplotyped contigs lists in separate haplotype fasta files.
+Given a genome assembly in fasta format and a set of proteins from the same or a closely related species also in fasta format and the awaited ploitdy, our python script will align the proteins onto the genome, produce a protein to contig link file, transform the link file in a contraint file, resolve the contraints with toolbar2 and extract the haplotyped contigs lists in separate haplotype fasta files. One can also add a second set of constraints which indicates for each contig in which haplotype it should be placed. The protein based constraint weight is square the number of links. The group constraint weight is the number of proteins in the contig.
+
+The preprint is available on biorxiv [Improving hifiasm haplotypes for autopolyploid genome assemblies using constraint programming](https://www.biorxiv.org/content/10.1101/2025.04.01.646355v1.article-metrics)
+[doi : https://doi.org/10.1101/2025.04.01.646355](https://doi.org/10.1101/2025.04.01.646355)
 
 Dependencies 
 - miniprot (https://github.com/lh3/miniprot)
