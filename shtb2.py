@@ -242,11 +242,11 @@ def main():
     args = parser.parse_args()
 
     # check software 
-    softwares = ("xz -h","toulbar2 -h")
+    softwares = ["xz -h","toulbar2 -h"]
     check_softwares(softwares)
     
     if args.skip_align == False :
-        softwares = ("miniprot -h")
+        softwares = ["miniprot"]
         check_softwares(softwares)
 
     # create sequence manipulator
