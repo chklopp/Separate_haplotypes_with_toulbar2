@@ -35,7 +35,7 @@ import copy
 
 pytoulbar2.tb2.option.verbose = 0
 
-def write_containts(ploidy, groups, weight) :
+def write_containts(ploidy, groups) :
     print("Writing contraint file")
     ctm = {} # dict mapping contigs to sets of transcripts
     cnm = {} # dict mapping contig names to indices
@@ -97,7 +97,6 @@ def write_containts(ploidy, groups, weight) :
             #print([i],l2)
     else :
       for c1 in ctm.keys():
-         #l1 = [weight for i in range(ploidy)]
          l1 = [len(ctm[c1]) for i in range(ploidy)]
          l1[preferences[c1]] = 0
          mycfn.AddFunction([c1],l1)
@@ -249,8 +248,7 @@ def main():
     parser.add_argument("--skip_align", type=bool, default=False, required=False, help="if the alignment is already performed")
     parser.add_argument("--optime", type=int, default=900, required=False, help="optimisation time in seconds")
     parser.add_argument("--groups", type=str, required=False, default = "", help="groups produced in a previous step (two columns, one for contigs and one for group, start at 0")
-    parser.add_argument("--groups_weight", type=int, required=False, default = 1, help="weight of the group constraint in the model")
-
+    
     args = parser.parse_args()
 
     # check software 
@@ -276,7 +274,7 @@ def main():
     print("Number of contigs having protein links :"+str(len(linked_contig_names)))
     
     # generate constraint file 
-    groups = write_containts(args.ploidy, args.groups, args.groups_weight)
+    groups = write_containts(args.ploidy, args.groups)
     
     # run constraint file with toulbar2
     run_contraints(args.optime)
