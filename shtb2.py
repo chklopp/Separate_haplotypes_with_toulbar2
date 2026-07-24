@@ -233,8 +233,8 @@ class SequenceManipulator:
                #print("seq "+k+"\n")
                if k not in haplotype_dict :
                    g = groups[k]
-                   f[g-1].write(">"+k+"\n")
-                   f[g-1].write(str(self.sequences[k].seq)+"\n")               	   
+                   f[g].write(">"+k+"\n")
+                   f[g].write(str(self.sequences[k].seq)+"\n")               	   
             
         for i in range(1, ploidy + 1) :
             f[i - 1].close()
