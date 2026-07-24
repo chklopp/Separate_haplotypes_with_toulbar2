@@ -104,6 +104,7 @@ def write_containts(ploidy, groups, weight) :
       
     #print("Cost shift =",shift)
     mycfn.Dump("constraints.cfn")
+    return(preferences)
 
 def align_proteins(proteins, genome, ploidy, threads):
     try:
@@ -213,7 +214,7 @@ class SequenceManipulator:
         except FileNotFoundError:
             print("File not found.")
 
-    def print_haplotypes(self, ploidy, prefix, haplotype_dict):
+    def print_haplotypes(self, ploidy, prefix, arggroups, groups, haplotype_dict):
         """create and fill haplotype files"""
         #print(ploidy, prefix, haplotype_dict)
         print("Writing haplotype files")
@@ -223,6 +224,17 @@ class SequenceManipulator:
             #print(k, v)
             f[v-1].write(">"+k+"\n")
             f[v-1].write(str(self.sequences[k].seq)+"\n")
+
+        # add sequences from the group which did not have protein hist 
+        #print("arg groups "+ arggroups+"\n")
+        if arggroups != "" :
+           #print(groups)
+           for k,v in self.sequences.items() :
+               #print("seq "+k+"\n")
+               if k not in haplotype_dict :
+                   g = groups[k]
+                   f[g-1].write(">"+k+"\n")
+                   f[g-1].write(str(self.sequences[k].seq)+"\n")               	   
             
         for i in range(1, ploidy + 1) :
             f[i - 1].close()
@@ -264,7 +276,7 @@ def main():
     print("Number of contigs having protein links :"+str(len(linked_contig_names)))
     
     # generate constraint file 
-    write_containts(args.ploidy, args.groups, args.groups_weight)
+    groups = write_containts(args.ploidy, args.groups, args.groups_weight)
     
     # run constraint file with toulbar2
     run_contraints(args.optime)
@@ -273,7 +285,8 @@ def main():
     haplo_dict = get_haplotypes(linked_contig_names)
     
     # Sauvegarder les résultats dans le fichier de sortie
-    manipulator.print_haplotypes(args.ploidy, args.output, haplo_dict)
+    manipulator.print_haplotypes(args.ploidy, args.output, args.groups, groups, haplo_dict)
+
 
 if __name__ == "__main__":
     main()
